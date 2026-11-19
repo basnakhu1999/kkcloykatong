@@ -1,0 +1,13 @@
+{
+  "name": "kkcloykatong",
+  "main": "_worker.js",
+  "compatibility_date": "2025-11-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "kkc-krathong" }
+  ]
+}

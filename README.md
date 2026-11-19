@@ -11,22 +11,11 @@
 3. Deploy จาก Git อีกครั้ง โดยให้ไดเรกทอรีที่เผยแพร่มี index.html, _worker.js และ _routes.json อยู่ด้วยกัน ตารางและดัชนีสร้างอัตโนมัติเมื่อมีคำขอ API ครั้งแรก
 4. เปิด `/api/floats` บนโดเมนเว็บ ควรเห็น JSON ที่มีฟิลด์ `floats` ลองเปิดคนละเบราว์เซอร์ ลอยกระทงพร้อมติ๊กแชร์ แล้วรอรอบดึงข้อมูลบนอีกจอ
 
-### ถ้าโปรเจกต์เป็น Worker ที่เสิร์ฟ Static Assets
+### Worker เดิมที่ขึ้นว่า “only has static assets”
 
-ใช้ `_worker.js` เป็น main ของ Worker เดิม ตั้ง static assets binding เป็น `ASSETS` และ D1 binding เป็น `DB` ให้เส้นทาง `/api/*` เข้า Worker ก่อน static assets ตัวอย่างส่วนที่จะรวมกับ Wrangler configuration ของโปรเจกต์ (แทน ID ด้วยค่าจาก D1 และคงชื่อ Worker เดิม)
+ไฟล์ `wrangler.json` ที่ราก repo กำหนดให้ deploy ทั้ง `_worker.js`, ไฟล์เว็บ และ D1 binding ชื่อ `DB` โดยใช้ฐานชื่อ `kkc-krathong`
 
-```toml
-main = "_worker.js"
-
-[assets]
-directory = "./public"
-binding = "ASSETS"
-run_worker_first = ["/api/*"]
-
-[[d1_databases]]
-binding = "DB"
-database_name = "kkc-krathong"
-database_id = "<D1 database ID>"
-```
-
-หากใช้ตัวอย่างนี้ ให้ใช้ build command `mkdir -p public && cp -R index.html count.html festival.css festival.js img scr public/` แล้ว deploy Worker จาก repo เดียวกัน
+1. เปิด Worker เดิม → Settings → Build เชื่อม repo นี้ เลือก production branch `main` และ root ที่ราก repo
+2. เว้น Build command ว่าง ใช้ Deploy command `npx wrangler@4 deploy` ถ้า Worker เดิมชื่ออื่น ให้ต่อท้ายด้วย `--name ชื่อจริงของ-worker`
+3. Deploy คอมมิตล่าสุด เมื่อ Wrangler มีสิทธิ์เข้าถึง D1 จะผูกฐานให้ตอน deploy หากบัญชีใช้ฐานชื่ออื่นอยู่ ให้ระบุ database_name และ database_id ของฐานนั้นใน wrangler.json ก่อน
+4. เปิด `/api/floats` บนโดเมน Worker หากได้ JSON ที่มีรายการ `floats` แปลว่า API อ่าน D1 สำเร็จ ระบบสร้างตารางครั้งแรกให้เอง
