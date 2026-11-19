@@ -6,6 +6,9 @@
   <title>ลอยกระทงออนไลน์ | ท่าอากาศยานขอนแก่น</title>
   <meta name="description" content="เลือกกระทง เขียนคำอธิษฐาน แล้วปล่อยกระทงลงสายน้ำออนไลน์กับท่าอากาศยานขอนแก่น">
   <link rel="icon" href="scr/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&amp;family=Sriracha&amp;display=swap">
   <link rel="stylesheet" href="festival.css">
   <script defer src="festival.js"></script>
 </head>
@@ -13,8 +16,13 @@
 <header><div class="wrap bar"><a class="brand" href="./"><img src="scr/favicon.png" alt="">ท่าอากาศยานขอนแก่น</a><a href="#stats">สถิติของฉัน</a></div></header>
 <main>
   <section class="scene" id="river" aria-labelledby="title">
-    <div class="wrap hero"><div class="intro"><h1 id="title">ลอยกระทง<br><em>ออนไลน์</em></h1><p>ฝากคำอธิษฐานไว้กับสายน้ำในคืนจันทร์เต็มดวง</p><a class="cta" href="#wish">เขียนคำอธิษฐาน <span aria-hidden="true">↓</span></a></div></div>
-    <div class="boats" aria-hidden="true"><img src="img/krathong-1.png" alt=""><img src="img/krathong-4.png" alt=""><img src="img/krathong-3.png" alt=""></div>
+    <h1 id="title" class="visually-hidden">ท่าอากาศยานขอนแก่น ร่วมสืบสานประเพณีวันลอยกระทงออนไลน์</h1>
+    <div class="landscape" aria-hidden="true"></div>
+    <div class="reflections" aria-hidden="true"></div>
+    <div class="boats" aria-hidden="true">
+      <img src="img/krathong-1.png" alt=""><img src="img/krathong-4.png" alt=""><img src="img/krathong-3.png" alt="">
+      <img src="img/krathong-2.png" alt=""><img src="img/krathong-5.png" alt="">
+    </div>
     <figure id="launched" hidden><figcaption></figcaption><img alt="" src="img/krathong.png"></figure>
   </section>
   <div class="wrap content">
@@ -22,10 +30,10 @@
       <dl><div><dt>ลอยวันนี้</dt><dd><strong id="today">0</strong> ใบ</dd></div><div><dt>ลอยสะสม</dt><dd><strong id="total">0</strong> ใบ</dd></div></dl>
     </aside>
     <form id="wish"><h2>ฝากคำอธิษฐาน</h2>
-      <fieldset><legend>เลือกกระทงของคุณ</legend><div id="choices"></div></fieldset>
+      <details><summary>เลือกแบบกระทง</summary><fieldset><legend class="visually-hidden">เลือกกระทงของคุณ</legend><div id="choices"></div></fieldset></details>
       <div class="labelrow"><label for="prayer">คำอธิษฐานของคุณ</label><small id="length">0 / 160</small></div>
       <textarea id="prayer" maxlength="160" required rows="3" placeholder="คืนนี้ อยากขอพรให้ใครเป็นพิเศษ…" aria-describedby="length"></textarea>
-      <button class="cta" type="submit">ปล่อยกระทงลงน้ำ <span aria-hidden="true">↗</span></button>
+      <button class="cta" type="submit">ลอยกระทง</button>
       <p id="notice" role="status"></p>
     </form>
   </div>

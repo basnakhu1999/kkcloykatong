@@ -1,22 +1,37 @@
 :root {color-scheme:dark;--paper:#fff7eb;--muted:#bdc3cd;--gold:#f4cf8b;--line:#ffffff26}
 * {box-sizing:border-box}
-body {margin:0;background:#101927;color:var(--paper);font:16px/1.6 system-ui,"Leelawadee UI",sans-serif}
+body {margin:0;background:#101927;color:var(--paper);font:16px/1.6 Mitr,system-ui,"Leelawadee UI",sans-serif}
 a {color:inherit;text-decoration:none} a:hover {text-decoration:underline}
 .wrap {width:min(1120px,90%);margin:auto}
 header {background:#111928;border-bottom:1px solid var(--line)}
 .bar,.brand,.labelrow {display:flex;align-items:center;justify-content:space-between}
 .bar {min-height:66px;font-size:.92rem}.brand {gap:12px;font-weight:650}.brand img {width:37px;height:37px}
-.scene {position:relative;isolation:isolate;overflow:hidden;background:#282650 url(img/province-1.png) center 48% /cover no-repeat}
-.scene:before {content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#10192bf2,transparent 80%),linear-gradient(0deg,#101927,transparent 38%)}
-.hero {min-height:clamp(385px,45vw,510px);display:flex;align-items:center}
-.intro {position:relative;z-index:2;max-width:55%;padding:32px 0 60px}
-h1,h2,p,figure,dl,dd {margin:0} h1 {font:700 clamp(48px,6.4vw,88px)/1.15 Georgia,"Noto Serif Thai",serif} h1 em {font-style:normal;color:var(--gold)}
-.intro p {margin:12px 0 24px}.cta {display:inline-flex;align-items:center;justify-content:center;gap:20px;border:0;border-radius:12px;background:var(--gold);color:#302515;padding:12px 21px;font:inherit;font-weight:700;cursor:pointer}.cta:hover {background:#ffe2ae;text-decoration:none}
-.boats {position:absolute;inset:0;pointer-events:none}.boats img,#launched {position:absolute;animation:drift 9s ease-in-out infinite alternate}.boats img:nth-child(1){width:7%;left:48%;bottom:12%}.boats img:nth-child(2){width:10%;right:9%;bottom:5%;animation-delay:-5s}.boats img:nth-child(3){width:4%;right:29%;bottom:20%}
-#launched {right:16%;bottom:7%;width:min(260px,40%);text-align:center;animation-duration:6s}#launched img {width:90px;display:block;margin:auto}figcaption {display:inline-block;background:#141c31ed;border:1px solid var(--line);border-radius:14px;padding:8px 12px;font-size:.9rem;overflow-wrap:anywhere;max-height:140px;overflow:auto}
-@keyframes drift {from{transform:translate(-7px,2px)}to{transform:translate(10px,-4px)}}
+h1,h2,p,figure,dl,dd {margin:0}
+.visually-hidden {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.scene {position:relative;isolation:isolate;overflow:hidden;aspect-ratio:1921/1081;max-width:1440px;margin:auto;background:#0c1524;perspective:900px}
+.landscape,.reflections,.boats {position:absolute;pointer-events:none}
+.landscape,.reflections {inset:-0.8%;background:url("scr/BG1.jpg") center / 100% 100% no-repeat}
+.landscape {animation:pan 20s ease-in-out infinite alternate}
+.reflections {mask-image:linear-gradient(transparent 64%,#0009 80%,#0009);animation:ripple 5s ease-in-out infinite alternate}
+@keyframes pan {to {transform:translate3d(.32%,.15%,2px)}}
+@keyframes ripple {to {transform:translate3d(-.2%,.25%,3px) scaleX(1.003)}}
+.boats {inset:0;transform:translateZ(12px)}
+.boats img {position:absolute;left:0;width:var(--size);bottom:var(--depth);animation:sail var(--duration) linear var(--delay) infinite}
+.boats img:nth-child(1){--size:4%;--depth:25%;--duration:64s;--delay:-7s}
+.boats img:nth-child(2){--size:7%;--depth:9%;--duration:49s;--delay:-38s}
+.boats img:nth-child(3){--size:4.8%;--depth:19%;--duration:61s;--delay:-45s}
+.boats img:nth-child(4){--size:8%;--depth:3%;--duration:53s;--delay:-14s}
+.boats img:nth-child(5){--size:3%;--depth:30%;--duration:72s;--delay:-43s}
+@keyframes sail {from{left:-10%;transform:rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}to{left:102%;transform:rotate(-2deg)}}
+#launched {position:absolute;bottom:3%;left:15%;width:min(280px,70%);text-align:center;animation:wish-drift 15s ease-out both}
+@keyframes wish-drift {from{transform:translate3d(-8%,8%,0);opacity:.25}12%{opacity:1}to{transform:translate3d(30%,-4%,8px)}}
+#launched img {width:clamp(42px,7vw,90px);display:block;margin:auto}
+figcaption {display:inline-block;background:#15202de8;color:white;border-radius:14px;padding:5px 12px;font-family:Sriracha,cursive;overflow-wrap:anywhere;max-height:95px;overflow:auto}
+.cta {display:block;margin:auto;width:195px;height:53px;border:0;background:transparent url("scr/sent.png") center / 100% 100%;padding-left:42px;color:white;font:24px Sriracha,cursive;cursor:pointer;text-shadow:0 1px 3px #18415f}
+.cta:hover {background-image:url("scr/hoversent.png")}
+details {margin:8px 0 12px}summary {cursor:pointer;color:var(--gold)}
 .content {display:grid;grid-template-columns:1fr 1.65fr;gap:clamp(28px,6vw,90px);align-items:start;padding:38px 0 65px}
-h2 {font-size:clamp(23px,2.5vw,32px);line-height:1.4}aside>p,small {color:var(--muted)}aside>p {margin:5px 0 18px}
+h2 {font-family:Sriracha,cursive;font-weight:400;font-size:clamp(23px,2.5vw,32px);line-height:1.4}aside>p,small {color:var(--muted)}aside>p {margin:5px 0 18px}
 dl {border-block:1px solid var(--line);display:flex;padding:18px 0}dl div {flex:1}dl div+div {border-left:1px solid var(--line);padding-left:22px}dt {color:var(--muted)}dd {color:var(--gold)}dd strong {font-size:2rem;font-variant-numeric:tabular-nums}
 form {background:#1a2536;border:1px solid var(--line);border-radius:20px;padding:clamp(20px,3vw,35px)}
 fieldset {padding:0;margin:19px 0;border:0;min-width:0}legend,label {font-weight:600}legend {margin-bottom:8px}
@@ -24,5 +39,11 @@ fieldset {padding:0;margin:19px 0;border:0;min-width:0}legend,label {font-weight
 :focus-visible,#choices input:focus-visible+img {outline:3px solid #9ce8fa;outline-offset:3px}
 textarea {width:100%;background:#101b2a;color:inherit;font:inherit;border:1px solid #546073;border-radius:12px;padding:12px 14px;margin:8px 0 12px;resize:vertical}textarea::placeholder{color:#abb1bd}
 #notice:not(:empty){margin-top:12px;color:var(--gold)}
-@media(max-width:680px){.content{grid-template-columns:1fr;gap:24px;padding-top:24px}form{grid-row:1}.intro{max-width:69%}.hero{min-height:365px}.scene{background-position:64% center}.intro p{font-size:.9rem}.bar{font-size:.83rem}.scene:has(#launched:not([hidden])) .intro{visibility:hidden}#launched{right:15%;width:70%;bottom:12%}.boats img:nth-child(2){width:18%}}
-@media(prefers-reduced-motion:reduce){.boats img,#launched{animation:none}}
+@media(max-width:680px){
+  .content{grid-template-columns:1fr;gap:20px;padding-top:18px}
+  form{grid-row:1}.bar{font-size:.83rem;min-height:52px}
+}
+@media(prefers-reduced-motion:reduce){
+  .landscape,.reflections,#launched{animation:none}
+  .boats img{animation-play-state:paused}
+}
