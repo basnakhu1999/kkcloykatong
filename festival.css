@@ -30,7 +30,9 @@ figcaption {display:inline-block;background:#15202de8;border-radius:14px;padding
 .dock svg {width:30px;height:30px;fill:none;stroke:var(--gold);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .dock .primary,.cta {background:linear-gradient(120deg,#ffe6ab,#dfb568);color:#352712}
 .primary svg {stroke:currentColor}
-.dock button:hover {box-shadow:inset 0 0 0 1px var(--gold)}
+.dock button {-webkit-tap-highlight-color:transparent}
+.dock button:focus:not(:focus-visible) {outline:none}
+@media (hover:hover) {.dock button:hover {color:var(--gold)}.dock .primary:hover {color:#352712}}
 dialog {position:fixed;inset:auto 0 max(15px,env(safe-area-inset-bottom));margin:0 auto;width:min(440px,calc(100% - 24px));max-height:calc(100dvh - 32px);overflow:auto;color:var(--paper);background:#162029;border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 12px 40px #0008}
 dialog::backdrop {background:#08101a52}
 .sheet-head,.labelrow {display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -45,3 +47,8 @@ textarea {width:100%;background:#101b2a;color:inherit;font:inherit;border:1px so
 
 @media(max-height:480px){.dock button{display:flex;align-items:center;justify-content:center;gap:4px}.dock svg{width:24px;height:24px}}
 @media(prefers-reduced-motion:reduce){.boats img{animation-play-state:paused}.float{animation:none;left:var(--still);transform:translateX(-50%)}.float img,.float::before{animation:none}}
+
+@media (max-width:700px), (max-height:500px) and (pointer:coarse) {
+  .dock {inset:auto 0 0;transform:none;width:100%;border:0;border-radius:0;
+    padding:5px max(6px,env(safe-area-inset-right)) max(5px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+}

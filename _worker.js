@@ -17,8 +17,9 @@ async function publish(request, db) {
   if (origin && origin !== new URL(request.url).origin) return reply({}, 403);
   if (!request.headers.get("Content-Type")?.startsWith("application/json")) return reply({}, 415);
   const body = await request.json().catch(() => null);
-  const message = typeof body?.message === "string" ? body.message.trim() : "";
-  if (!message || message.length > 160 || !Number.isInteger(body.design) ||
+  const privateFloat = body?.private === true;
+  const message = !privateFloat && typeof body?.message === "string" ? body.message.trim() : "";
+  if ((!privateFloat && !message) || message.length > 160 || !Number.isInteger(body?.design) ||
       body.design < 0 || body.design > 6 || !/^[a-f0-9-]{36}$/i.test(body.token ?? "")) {
     return reply({}, 400);
   }
@@ -44,16 +45,24 @@ export default {
     try {
       ready ??= env.DB.batch([env.DB.prepare(schema), env.DB.prepare(
         "CREATE INDEX IF NOT EXISTS floats_source_created ON floats(source,created)"
-      )]).catch(error => { ready = undefined; throw error; });
+      ), env.DB.prepare("CREATE INDEX IF NOT EXISTS floats_created ON floats(created)")]).catch(error => { ready = undefined; throw error; });
       await ready;
       if (request.method === "POST") return await publish(request, env.DB);
       if (request.method !== "GET") return reply({}, 405);
+      if (url.searchParams.has("stats")) {
+        const now = Math.floor(Date.now() / 1000);
+        const midnight = Math.floor((now + 25200) / 86400) * 86400 - 25200;
+        const counts = await env.DB.prepare(`SELECT
+          (SELECT COUNT(*) FROM floats) AS total,
+          (SELECT COUNT(*) FROM floats WHERE created >= ?) AS today`).bind(midnight).first();
+        return reply(counts);
+      }
       const after = url.searchParams.get("after");
-      const fields = "SELECT id, token, design, message FROM floats";
+      const fields = "SELECT id, token, design, message FROM floats WHERE message <> ''";
       if (after !== null && !/^\d{1,15}$/.test(after)) return reply({}, 400);
       const query = after === null
         ? env.DB.prepare(fields + " ORDER BY id DESC LIMIT 6")
-        : env.DB.prepare(fields + " WHERE id>? ORDER BY id LIMIT 8").bind(Number(after));
+        : env.DB.prepare(fields + " AND id>? ORDER BY id LIMIT 8").bind(Number(after));
       const { results } = await query.all();
       return reply({ floats: after === null ? results.reverse() : results });
     } catch {

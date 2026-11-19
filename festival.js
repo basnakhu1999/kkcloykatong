@@ -3,11 +3,6 @@
 const byId = id => document.getElementById(id);
 const prayer = byId("prayer");
 
-const prefix = "kkc:float:v1:";
-const temporary = new Set();
-const dayFormat = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Bangkok", year: "numeric", month: "2-digit", day: "2-digit"
-});
 const numberFormat = new Intl.NumberFormat("th-TH");
 const designs = ["กระทงใบตอง", "กระทงดอกไม้ชมพู", "กระทงดาวเรือง", "กระทงกลีบใบตอง", "กระทงบัวชมพู", "กระทงดอกไม้ขาว", "กระทงบัวฟ้า"];
 
@@ -29,7 +24,7 @@ designs.forEach((name, index) => {
 });
 
 const sheet = byId("sheet");
-const panels = { picker: "เลือกกระทง", composer: "ฝากคำอธิษฐาน", stats: "กระทงของฉัน" };
+const panels = { picker: "เลือกกระทง", composer: "ฝากคำอธิษฐาน", stats: "สถิติกระทงรวม" };
 
 function openPanel(id) {
   for (const panel of Object.keys(panels)) byId(panel).hidden = panel !== id;
@@ -38,38 +33,41 @@ function openPanel(id) {
   const firstControl = id === "composer" ? prayer :
     id === "picker" ? byId("choices").querySelector("input:checked") : byId("close");
   firstControl.focus();
+  if (id === "stats") refreshStats();
 }
 document.querySelectorAll("[data-panel]").forEach(button => {
   button.addEventListener("click", () => openPanel(button.dataset.panel));
 });
 byId("continue").addEventListener("click", () => openPanel("composer"));
 byId("close").addEventListener("click", () => sheet.close());
-if (location.hash === "#stats") openPanel("stats");
-
-function refreshStats() {
-  const events = new Set(temporary);
+const api = new URL("api/floats", document.baseURI);
+let loadingStats = false;
+async function refreshStats() {
+  if (loadingStats || document.hidden || !sheet.open || byId("stats").hidden) return;
+  loadingStats = true;
   try {
-    for (const key of Object.keys(localStorage)) {
-      if (key.startsWith(prefix)) events.add(key);
-    }
+    const url = new URL(api);
+    url.searchParams.set("stats", "1");
+    const response = await fetch(url, {signal: AbortSignal.timeout(8000)});
+    if (!response.ok) throw new Error();
+    const {today, total} = await response.json();
+    if (!Number.isSafeInteger(today) || !Number.isSafeInteger(total)) throw new Error();
+    byId("today").textContent = numberFormat.format(today);
+    byId("total").textContent = numberFormat.format(total);
+    byId("scope").textContent = "จำนวนกระทงจากผู้ร่วมลอยทุกคน";
   } catch {
-    byId("scope").textContent = "สถิติชั่วคราวในหน้านี้";
+    byId("scope").textContent = "ยังอัปเดตยอดรวมไม่ได้";
+  } finally {
+    loadingStats = false;
   }
-  const todayPrefix = prefix + dayFormat.format(new Date()) + ":";
-  let todayCount = 0;
-  for (const key of events) {
-    if (key.startsWith(todayPrefix)) todayCount++;
-  }
-  byId("today").textContent = numberFormat.format(todayCount);
-  byId("total").textContent = numberFormat.format(events.size);
 }
+if (location.hash === "#stats") openPanel("stats");
 
 function updateLength() {
   prayer.setCustomValidity("");
   byId("length").textContent = prayer.value.length + " / 160";
 }
 prayer.addEventListener("input", updateLength);
-const api = new URL("api/floats", document.baseURI);
 const mine = new Set();
 const queue = [];
 const recentHistory = [];
@@ -176,43 +174,28 @@ byId("wish").addEventListener("submit", async event => {
   }
   const design = Array.from(byId("choices").querySelectorAll("input")).findIndex(input => input.checked);
   const share = byId("share").checked;
-  const key = prefix + dayFormat.format(new Date()) + ":" + crypto.getRandomValues(new Uint32Array(4)).join("-");
-  try {
-    localStorage.setItem(key, "1");
-  } catch {
-    temporary.add(key);
-    byId("scope").textContent = "กระทงที่บันทึกไม่ได้จะนับเฉพาะในหน้านี้";
-  }
-  refreshStats();
   sheet.close();
   floatBoat(design, message, true);
   prayer.value = "";
   updateLength();
-  if (!share) {
-    notify("ลอยกระทงส่วนตัวแล้ว");
-    return;
-  }
   const token = crypto.randomUUID();
-  mine.add(token);
+  if (share) mine.add(token);
   try {
     const response = await fetch(api, {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, design, message }), signal: AbortSignal.timeout(10000)
+      body: JSON.stringify(share ? { token, design, message } : { token, design: 0, private: true }), signal: AbortSignal.timeout(10000)
     });
     if (response.status === 429) {
       mine.delete(token);
-      notify("กระทงลอยบนจอนี้แล้ว กรุณาเว้น 5 วินาทีก่อนแชร์ใบถัดไป");
+      notify("กระทงลอยบนจอนี้แล้ว กรุณาเว้น 5 วินาทีก่อนส่งใบถัดไป");
       return;
     }
     if (!response.ok || !(await response.json()).published) throw new Error();
-    notify("ปล่อยกระทงลงสายน้ำร่วมแล้ว");
+    notify(share ? "ปล่อยกระทงลงสายน้ำร่วมแล้ว" : "ลอยส่วนตัวแล้ว นับในยอดรวมแล้ว");
   } catch {
-    notify("กระทงลอยบนจอนี้แล้ว แต่ยังยืนยันการแชร์ไม่ได้");
+    notify(share ? "กระทงลอยบนจอนี้แล้ว แต่ยังยืนยันการแชร์ไม่ได้" : "ลอยส่วนตัวแล้ว แต่ยังยืนยันการนับยอดไม่ได้");
   }
   setTimeout(() => mine.delete(token), 3600000);
 
 });
-window.addEventListener("storage", refreshStats);
-window.addEventListener("pageshow", refreshStats);
-setInterval(refreshStats, 60000);
-refreshStats();
+setInterval(refreshStats, 5000);
