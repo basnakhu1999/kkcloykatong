@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <title>ลอยกระทงออนไลน์ | ท่าอากาศยานขอนแก่น</title>
   <meta name="description" content="เลือกกระทง เขียนคำอธิษฐาน แล้วปล่อยกระทงลงสายน้ำออนไลน์กับท่าอากาศยานขอนแก่น">
   <link rel="icon" href="scr/favicon.png">
@@ -13,29 +13,41 @@
   <script defer src="festival.js"></script>
 </head>
 <body>
-<header><div class="wrap bar"><a class="brand" href="./"><img src="scr/favicon.png" alt="">ท่าอากาศยานขอนแก่น</a><a href="#stats">สถิติของฉัน</a></div></header>
-<main>
-  <section class="scene" id="river" aria-labelledby="title">
-    <h1 id="title" class="visually-hidden">ท่าอากาศยานขอนแก่น ร่วมสืบสานประเพณีวันลอยกระทงออนไลน์</h1>
-    <div class="landscape" aria-hidden="true"></div>
-    <div class="reflections" aria-hidden="true"></div>
-    <div class="boats" aria-hidden="true">
-      <img src="img/krathong-1.png" alt=""><img src="img/krathong-4.png" alt=""><img src="img/krathong-3.png" alt="">
-      <img src="img/krathong-2.png" alt=""><img src="img/krathong-5.png" alt="">
-    </div>
-    <figure id="launched" hidden><figcaption></figcaption><img alt="" src="img/krathong.png"></figure>
-  </section>
-  <div class="wrap content">
-    <aside id="stats"><h2>กระทงของฉัน</h2><p id="scope">สถิติการลอยในเบราว์เซอร์นี้</p>
-      <dl><div><dt>ลอยวันนี้</dt><dd><strong id="today">0</strong> ใบ</dd></div><div><dt>ลอยสะสม</dt><dd><strong id="total">0</strong> ใบ</dd></div></dl>
-    </aside>
-    <form id="wish"><h2>ฝากคำอธิษฐาน</h2>
-      <details><summary>เลือกแบบกระทง</summary><fieldset><legend class="visually-hidden">เลือกกระทงของคุณ</legend><div id="choices"></div></fieldset></details>
-      <div class="labelrow"><label for="prayer">คำอธิษฐานของคุณ</label><small id="length">0 / 160</small></div>
-      <textarea id="prayer" maxlength="160" required rows="3" placeholder="คืนนี้ อยากขอพรให้ใครเป็นพิเศษ…" aria-describedby="length"></textarea>
-      <button class="cta" type="submit">ลอยกระทง</button>
-      <p id="notice" role="status"></p>
-    </form>
+<main class="scene" id="river" aria-label="สายน้ำลอยกระทง">
+  <div class="boats" aria-hidden="true">
+    <img src="img/krathong-1.png" alt=""><img src="img/krathong-4.png" alt=""><img src="img/krathong-3.png" alt="">
+    <img src="img/krathong-2.png" alt=""><img src="img/krathong-5.png" alt="">
   </div>
+  <figure id="launched" hidden><figcaption></figcaption><img alt="" src="img/krathong.png"></figure>
+  <p id="notice" role="status" class="sr-only"></p>
 </main>
+<nav class="dock" aria-label="เมนูลอยกระทง">
+  <button data-panel="picker" aria-haspopup="dialog">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 21q8-1 13 5-8-6-7-13 8 2 10 10 1-9 10-13 2 8-6 16 6-6 12-6-4 13-16 13T4 21Z"/><path d="M15 18q0-6 5-12 5 5 5 10"/></svg>
+    เลือกกระทง
+  </button>
+  <button class="primary" data-panel="composer" aria-haspopup="dialog">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 24q7 0 11 4l4-6 5 6q5-4 10-4-4 10-15 10T5 24Z"/><path d="M18 23v-9h4v9M20 12c-5-2-2-6 1-10 0 5 4 7-1 10Z"/><path d="M6 36q4 2 8 0m13 0q4 2 7 0"/></svg>
+    ลอยกระทง
+  </button>
+  <button data-panel="stats" aria-haspopup="dialog">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 33h30M9 28v-7h4v7m5 0V15h4v13m5 0V9h4v19"/><path d="m7 14 8-5 5 2 8-7"/></svg>
+    สถิติของฉัน
+  </button>
+</nav>
+<dialog id="sheet" aria-labelledby="panel-title">
+  <div class="sheet-head"><h2 id="panel-title"></h2><button type="button" id="close" aria-label="ปิด">×</button></div>
+  <section id="picker" hidden>
+    <fieldset><legend class="sr-only">เลือกกระทงของคุณ</legend><div id="choices"></div></fieldset>
+    <button class="cta" id="continue">เขียนคำอธิษฐาน</button>
+  </section>
+  <form id="wish"><div id="composer" hidden>
+    <div class="labelrow"><label for="prayer">คำอธิษฐานของคุณ</label><small id="length">0 / 160</small></div>
+    <textarea id="prayer" maxlength="160" required rows="3" placeholder="คืนนี้ อยากขอพรให้ใครเป็นพิเศษ…" aria-describedby="length"></textarea>
+    <button class="cta" type="submit">ปล่อยกระทงลงน้ำ</button>
+  </div></form>
+  <section id="stats" hidden><p id="scope">สถิติการลอยในเบราว์เซอร์นี้</p>
+    <dl><div><dt>ลอยวันนี้</dt><dd><strong id="today">0</strong> ใบ</dd></div><div><dt>ลอยสะสม</dt><dd><strong id="total">0</strong> ใบ</dd></div></dl>
+  </section>
+</dialog>
 </body></html>

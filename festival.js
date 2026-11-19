@@ -17,6 +17,7 @@ designs.forEach((name, index) => {
   const thumbnail = document.createElement("img");
   radio.type = "radio";
   radio.name = "design";
+  radio.setAttribute("form", "wish");
   radio.value = index ? "img/krathong-" + index + ".png" : "img/krathong.png";
   radio.checked = index === 0;
   radio.setAttribute("aria-label", name);
@@ -26,6 +27,24 @@ designs.forEach((name, index) => {
   label.append(radio, thumbnail);
   byId("choices").append(label);
 });
+
+const sheet = byId("sheet");
+const panels = { picker: "เลือกกระทง", composer: "ฝากคำอธิษฐาน", stats: "กระทงของฉัน" };
+
+function openPanel(id) {
+  for (const panel of Object.keys(panels)) byId(panel).hidden = panel !== id;
+  byId("panel-title").textContent = panels[id];
+  if (!sheet.open) sheet.showModal();
+  const firstControl = id === "composer" ? prayer :
+    id === "picker" ? byId("choices").querySelector("input:checked") : byId("close");
+  firstControl.focus();
+}
+document.querySelectorAll("[data-panel]").forEach(button => {
+  button.addEventListener("click", () => openPanel(button.dataset.panel));
+});
+byId("continue").addEventListener("click", () => openPanel("composer"));
+byId("close").addEventListener("click", () => sheet.close());
+if (location.hash === "#stats") openPanel("stats");
 
 function refreshStats() {
   const events = new Set(temporary);
@@ -69,13 +88,14 @@ byId("wish").addEventListener("submit", event => {
   refreshStats();
   launched.querySelector("img").src = event.currentTarget.elements.design.value;
   launched.querySelector("figcaption").textContent = message;
+  sheet.close();
   launched.hidden = false;
+  for (const animation of launched.getAnimations()) animation.currentTime = 0;
   clearTimeout(hideBoat);
   hideBoat = setTimeout(() => { launched.hidden = true; }, 15000);
   prayer.value = "";
   updateLength();
   byId("notice").textContent = "ลอยกระทงแล้ว ขอให้คำอธิษฐานของคุณเป็นจริง";
-  byId("river").scrollIntoView({block:"start", behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
 });
 window.addEventListener("storage", refreshStats);
 window.addEventListener("pageshow", refreshStats);
