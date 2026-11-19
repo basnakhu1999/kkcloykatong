@@ -15,9 +15,15 @@ h2,p,figure,dl,dd {margin:0}
 .boats img:nth-child(5){--size:3%;--depth:30%;--duration:72s;--delay:-43s}
 @keyframes sail {from{left:-10%;transform:rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}to{left:102%;transform:rotate(-2deg)}}
 
-#launched {position:absolute;left:50%;bottom:max(17%,100px);width:min(280px,76vw);text-align:center;transform:translateX(-50%);animation:wish-drift 15s linear both}
-@keyframes wish-drift {0%{left:0;transform:translateX(-100%)}15%{left:18%;transform:translateX(-10%)}85%{left:82%;transform:translateX(-90%)}100%{left:100%;transform:translateX(0)}}
-#launched img {width:clamp(55px,7vw,100px);display:block;margin:auto}
+.float {position:absolute;left:0;bottom:max(var(--lane),90px);width:var(--beam);text-align:center;pointer-events:none;animation:cross-river var(--travel) linear both}
+@keyframes cross-river {from{transform:translateX(-100%)}to{transform:translateX(100vw)}}
+.float img {display:block;width:100%;transform-origin:50% 84%;animation:bob var(--swell) ease-in-out infinite alternate}
+@keyframes bob {from{transform:translateY(2px) rotate(-2.4deg)}to{transform:translateY(-2px) rotate(2deg)}}
+.float::before {content:"";position:absolute;bottom:1%;left:12%;width:76%;height:9%;border:1px solid #fce7ab80;border-radius:50%;animation:wake 4s ease-out infinite}
+@keyframes wake {from{transform:scale(.75);opacity:.7}to{transform:scale(1.5);opacity:0}}
+.float figcaption {position:absolute;bottom:100%;left:50%;transform:translateX(-50%);width:max-content;max-width:min(36vw,235px);font-size:clamp(13px,1.3vw,17px)}
+.share {display:block;margin:0 0 12px;font-size:.86rem}
+.toast:not(:empty) {position:absolute;bottom:84px;left:50%;transform:translateX(-50%);width:max-content;max-width:90%;padding:5px 12px;border-radius:12px;background:#101b24eb;text-align:center;font-size:.84rem}
 figcaption {display:inline-block;background:#15202de8;border-radius:14px;padding:5px 12px;font-family:Sriracha,cursive;overflow-wrap:anywhere;max-height:22dvh;overflow:auto}
 .dock {position:fixed;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;gap:4px;padding:5px;border:1px solid #edd09588;background:#101b24f5;box-shadow:0 6px 24px #0008;border-radius:22px;width:min(365px,calc(100% - 24px))}
 .dock button {flex:1;display:grid;justify-items:center;align-content:center;gap:2px;border:0;border-radius:17px;background:transparent;font-size:.85rem;padding:6px 2px}
@@ -38,4 +44,4 @@ fieldset {padding:0;border:0;min-width:0;margin:0 0 15px}
 textarea {width:100%;background:#101b2a;color:inherit;font:inherit;border:1px solid #546073;border-radius:12px;padding:12px 14px;margin:8px 0 12px;resize:vertical}textarea::placeholder{color:#abb1bd}
 
 @media(max-height:480px){.dock button{display:flex;align-items:center;justify-content:center;gap:4px}.dock svg{width:24px;height:24px}}
-@media(prefers-reduced-motion:reduce){.boats img{animation-play-state:paused}#launched{animation:none}}
+@media(prefers-reduced-motion:reduce){.boats img{animation-play-state:paused}.float{animation:none;left:var(--still);transform:translateX(-50%)}.float img,.float::before{animation:none}}

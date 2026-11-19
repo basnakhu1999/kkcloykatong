@@ -18,8 +18,8 @@
     <img src="img/krathong-1.png" alt=""><img src="img/krathong-4.png" alt=""><img src="img/krathong-3.png" alt="">
     <img src="img/krathong-2.png" alt=""><img src="img/krathong-5.png" alt="">
   </div>
-  <figure id="launched" hidden><figcaption></figcaption><img alt="" src="img/krathong.png"></figure>
-  <p id="notice" role="status" class="sr-only"></p>
+  <div id="flotilla"></div>
+  <p id="notice" role="status" class="toast"></p>
 </main>
 <nav class="dock" aria-label="เมนูลอยกระทง">
   <button data-panel="picker" aria-haspopup="dialog">
@@ -44,6 +44,7 @@
   <form id="wish"><div id="composer" hidden>
     <div class="labelrow"><label for="prayer">คำอธิษฐานของคุณ</label><small id="length">0 / 160</small></div>
     <textarea id="prayer" maxlength="160" required rows="3" placeholder="คืนนี้ อยากขอพรให้ใครเป็นพิเศษ…" aria-describedby="length"></textarea>
+    <label class="share"><input type="checkbox" id="share" checked> ให้คนอื่นเห็นกระทงและคำอธิษฐานนี้</label>
     <button class="cta" type="submit">ปล่อยกระทงลงน้ำ</button>
   </div></form>
   <section id="stats" hidden><p id="scope">สถิติการลอยในเบราว์เซอร์นี้</p>
