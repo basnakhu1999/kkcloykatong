@@ -49,6 +49,17 @@ textarea {width:100%;background:#101b2a;color:inherit;font:inherit;border:1px so
 @media(prefers-reduced-motion:reduce){.boats img{animation-play-state:paused}.float{animation:none;left:var(--still);transform:translateX(-50%)}.float img,.float::before{animation:none}}
 
 @media (max-width:700px), (max-height:500px) and (pointer:coarse) {
-  .dock {inset:auto 0 0;transform:none;width:100%;border:0;border-radius:0;
-    padding:5px max(6px,env(safe-area-inset-right)) max(5px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+  .dock {
+    left:calc(12px + env(safe-area-inset-left));
+    right:calc(12px + env(safe-area-inset-right));
+    bottom:calc(10px + env(safe-area-inset-bottom));
+    width:auto;
+    transform:none;
+    padding:5px;
+    border:1px solid #c6aa758f;
+    border-radius:14px;
+    box-shadow:0 4px 16px #0006;
+  }
+  .dock button {min-height:44px;border-radius:9px}
+  .toast:not(:empty) {bottom:calc(90px + env(safe-area-inset-bottom))}
 }
