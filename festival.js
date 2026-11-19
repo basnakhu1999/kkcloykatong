@@ -72,6 +72,7 @@ prayer.addEventListener("input", updateLength);
 const api = new URL("api/floats", document.baseURI);
 const mine = new Set();
 const queue = [];
+const recentHistory = [];
 let cursor = null;
 let lane = 0;
 let toastTimer;
@@ -90,7 +91,7 @@ function floatBoat(design, message, personal) {
   const beam = Math.round(Math.min(personal ? 108 : 78, Math.max(personal ? 66 : 48, width * .07)));
   const seconds = (width + beam) / (personal ? 15 : 13);
   lane = (lane + 1) % 3;
-  boat.className = "float";
+  boat.className = personal ? "float" : "float shared";
   boat.style.setProperty("--beam", beam + "px");
   boat.style.setProperty("--lane", (personal ? 18 : 24 + lane * 6) + "%");
   boat.style.setProperty("--still", (personal ? 50 : 20 + lane * 28) + "%");
@@ -105,35 +106,65 @@ function floatBoat(design, message, personal) {
   setTimeout(() => boat.remove(), reduced ? 12000 : (seconds + 1) * 1000);
 }
 
+const pollInterval = 3000;
+let retryDelay = pollInterval;
+let pollTimer;
+let launchTimer;
+let polling = false;
+let nextLaunch = 0;
+
+function showNextBoat() {
+  clearTimeout(launchTimer);
+  if (document.hidden || !(queue.length || recentHistory.length)) return;
+  const wait = nextLaunch - Date.now();
+  if (wait > 0) {
+    launchTimer = setTimeout(showNextBoat, wait);
+    return;
+  }
+  // New arrivals get the next lane before boats from the opening snapshot.
+  const item = queue.shift() ?? recentHistory.shift();
+  const visible = byId("flotilla").querySelectorAll(".shared");
+  if (visible.length >= 12) visible[0].remove();
+  floatBoat(item.design, item.message, false);
+  nextLaunch = Date.now() + 900;
+  if (queue.length || recentHistory.length) launchTimer = setTimeout(showNextBoat, 900);
+}
+
 async function poll() {
-  let delay = 30000;
+  if (document.hidden || polling) return;
+  polling = true;
+  clearTimeout(pollTimer);
   try {
-    if (document.hidden || queue.length >= 8) return;
     const url = new URL(api);
-    if (cursor !== null) url.searchParams.set("after", cursor);
+    const firstVisit = cursor === null;
+    if (!firstVisit) url.searchParams.set("after", cursor);
     const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!response.ok) throw new Error();
     const { floats } = await response.json();
+    const arrivals = firstVisit ? recentHistory : queue;
     for (const item of floats) {
       cursor = item.id;
-      if (!mine.delete(item.token)) queue.push(item);
+      if (!mine.delete(item.token)) arrivals.push(item);
     }
     cursor ??= 0;
+    showNextBoat();
+    retryDelay = pollInterval;
   } catch {
-    delay = 90000;
+    retryDelay = Math.min(retryDelay * 2, 60000);
   } finally {
-    setTimeout(poll, delay);
+    polling = false;
+    if (!document.hidden) pollTimer = setTimeout(poll, Math.max(retryDelay, queue.length * 900));
   }
 }
-function driftNext() {
-  if (!document.hidden && queue.length && byId("flotilla").childElementCount < 5) {
-    const next = queue.shift();
-    floatBoat(next.design, next.message, false);
+document.addEventListener("visibilitychange", () => {
+  clearTimeout(pollTimer);
+  clearTimeout(launchTimer);
+  if (!document.hidden) {
+    showNextBoat();
+    poll();
   }
-  setTimeout(driftNext, 9000);
-}
+});
 poll();
-setTimeout(driftNext, 1500);
 
 byId("wish").addEventListener("submit", async event => {
   event.preventDefault();
